@@ -6,7 +6,7 @@
 #include "WiFi.h"
 #include <WebServer.h>
 #include <ESPAsyncWebServer.h>
-
+#include <SPIFFS.h>
 
 AsyncWebServer server(80);
 void setup() {
@@ -19,9 +19,13 @@ void setup() {
 
   Serial.println("Connecting to wifi");
 
+  if(!SPIFFS.begin()){
+    Serial.println("Error starting SPIFFS");
+    return;
+  }
 
   
-WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.setHostname("BensPlaneSmoother");
 
   WiFi.begin("Dunder MiffLAN","06192012");
@@ -35,6 +39,11 @@ WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
   Serial.print("Local IP Address: ");
   Serial.println( WiFi.localIP());
   server.begin();
+
+   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/ws.html", "text/html");
+  });
+
 }
 
 
