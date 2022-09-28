@@ -9,41 +9,72 @@
 #include <SPIFFS.h>
 
 AsyncWebServer server(80);
-void setup() {
-  Serial.begin(115200);
 
+bool InitSpiffs();
+bool InitWifi();
+bool InitServer();
+
+
+bool InitSpiffs()
+{
+  if(!SPIFFS.begin()){
+    Serial.println("Unable to mount SPIFFS.");
+    return false;
+  }
+  return true;
+}
+
+bool InitWifi()
+{
   // Set WiFi to station mode and disconnect from an AP if it was previously connected
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   delay(100);
-
   Serial.println("Connecting to wifi");
-
-  if(!SPIFFS.begin()){
-    Serial.println("Error starting SPIFFS");
-    return;
-  }
-
-  
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.setHostname("BensPlaneSmoother");
 
   WiFi.begin("Dunder MiffLAN","06192012");
 
+  int count = 0;
+  int delayMillis = 500;
+  int timeout = 30*1000;
   while (WiFi.status()!=WL_CONNECTED)
   {
     Serial.print(".");
-    delay(500);
+    delay(delayMillis);
+    count+=delayMillis;
+    if(count > timeout)
+    {
+      Serial.println("Unable to connect to wifi");
+      return false;
+    }
   }
   Serial.println();
   Serial.print("Local IP Address: ");
   Serial.println( WiFi.localIP());
+  return true;
+}
+
+bool InitServer()
+{
   server.begin();
 
    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/ws.html", "text/html");
   });
+}
 
+
+
+
+void setup() 
+{
+  Serial.begin(115200);
+
+  if(!InitSpiffs());
+  if(!InitWifi());
+  
 }
 
 
