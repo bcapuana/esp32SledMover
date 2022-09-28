@@ -1,22 +1,73 @@
-#include <Arduino.h>
-#include <WiFi.h>
+/*
+  Example from WiFi > WiFiScan
+  Complete details at https://RandomNerdTutorials.com/esp32-useful-wi-fi-functions-arduino/
+*/
 
-WiFiServer server(80);
+#include "WiFi.h"
+#include <WebServer.h>
+#include <ESPAsyncWebServer.h>
+
+
+AsyncWebServer server(80);
 void setup() {
   Serial.begin(115200);
-  Serial.print("Connecting to wifi");
-  WiFi.begin("Dunder MiffLAN","06192012");
-  while(WiFi.status()!=WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
 
+  // Set WiFi to station mode and disconnect from an AP if it was previously connected
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
+
+  Serial.println("Connecting to wifi");
+
+
+  
+WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+  WiFi.setHostname("BensPlaneSmoother");
+
+  WiFi.begin("Dunder MiffLAN","06192012");
+
+  while (WiFi.status()!=WL_CONNECTED)
+  {
+    Serial.print(".");
+    delay(500);
   }
-  Serial.println("");
-  Serial.println("IP Address: "+WiFi.localIP());
+  Serial.println();
+  Serial.print("Local IP Address: ");
+  Serial.println( WiFi.localIP());
   server.begin();
 }
 
+
+
 void loop() {
-  // put your main code here, to run repeatedly:
+
+  
+
+
+  /*Serial.println("scan start");
+
+  // WiFi.scanNetworks will return the number of networks found
+  int n = WiFi.scanNetworks();
+  Serial.println("scan done");
+  if (n == 0) {
+      Serial.println("no networks found");
+  } else {
+    Serial.print(n);
+    Serial.println(" networks found");
+    for (int i = 0; i < n; ++i) {
+      // Print SSID and RSSI for each network found
+      Serial.print(i + 1);
+      Serial.print(": ");
+      Serial.print(WiFi.SSID(i));
+      Serial.print(" (");
+      Serial.print(WiFi.RSSI(i));
+      Serial.print(")");
+      Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
+      delay(10);
+    }
+  }
+  Serial.println("");
+
+  // Wait a bit before scanning again
+  delay(5000);*/
 }
