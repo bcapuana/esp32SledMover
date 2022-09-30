@@ -1,27 +1,103 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
-    </head>
-<body>
 
-<div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-          <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-          <span class="fs-4">Simple header</span>
-        </a>
-  
-        <ul class="nav nav-pills">
-          <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">Pricing</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">About</a></li>
-        </ul>
-      </header>
-</div>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <script src="jquery-3.6.1.min.js"></script>
+    <script type="text/javascript">
+        let httpRequest;
+        function onTimerElapsed()
+        {
+            $.ajax({url:"/EStop",success: function(result)
+            {
+                $("#EStopStatus").text(result);
+                if(result=="Triggered")
+                    $("#EStopStatus").addClass("triggered");
+                else
+                    $("#EStopStatus").removeClass("triggered");
+            }});
+            $.ajax({url:"/HomeLimit",success: function(result)
+            {
+                $("#HomeLimitStatus").text(result);
+                if(result=="Triggered")
+                    $("#HomeLimitStatus").addClass("triggered");
+                else
+                    $("#HomeLimitStatus").removeClass("triggered");
+            }});
+            $.ajax({url:"/EndStop",success: function(result)
+            {
+                $("#EndStopStatus").text(result);
+                if(result=="Triggered")
+                    $("#EndStopStatus").addClass("triggered");
+                else
+                    $("#EndStopStatus").removeClass("triggered");
+            }});
+        }
+        function Home()
+        {
+            $.post("/Home",null,function(data,status)
+            {
 
+            });
+        }
+
+    </script>
+    <style>
+        .triggered{
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+
+<body onload="setInterval(onTimerElapsed,250)">
+    <main>
+        <div class="container">
+            <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+                <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+                    <svg class="bi me-2" width="40" height="32">
+                        <use xlink:href="#bootstrap"></use>
+                    </svg>
+                    <span class="fs-4">Ben's Plane Smoother Thing</span>
+                </a>
+
+                <ul class="nav nav-pills">
+                    <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+                </ul>
+            </header>
+        </div>
+        <div class="container-fluid pb-3">
+            <div class="d-grid gap-3" style="grid-template-columns: 1fr 2fr;">
+                <div class="bg-light border rounded-3">
+                    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+                        Status
+                    </header>
+                    <div class="row mb-2">
+                        <div class="col-md-4 themed-grid-col">E-Stop</div>
+                        <div class="col-md-8 themed-grid-col" id="EStopStatus">Open</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 themed-grid-col">Home Limit</div>
+                        <div class="col-md-8 themed-grid-col" id="HomeLimitStatus">Triggered</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 themed-grid-col">End Stop</div>
+                        <div class="col-md-8 themed-grid-col" id="EndStopStatus">Triggered</div>
+                    </div>
+                </div>
+                <div class="bg-light border rounded-3">
+                    <ul class="nav nav-pills">
+                        <button onclick="Home();">Home</button>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
 </body>
+
 </html>
