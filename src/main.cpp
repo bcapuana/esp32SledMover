@@ -8,8 +8,10 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
 #include <Bounce2.h>
-#include <AccelStepper.h>
 #include <elapsedMillis.h>
+#include "TMC2208_AccelStepper.h"
+#include <MultiStepper.h>
+#include <SoftwareSerial.h>
 
 AsyncWebServer server(80);
 
@@ -25,8 +27,10 @@ Bounce m_eStop;
 Bounce m_endStop;
 Bounce m_homeLimit;
 
-AccelStepper *m_stepper1;
-AccelStepper *m_stepper2;
+
+TMC2208_AccelStepper* m_stepper1;
+TMC2208_AccelStepper* m_stepper2;
+
 
 elapsedMillis printTime;
 
@@ -80,13 +84,11 @@ bool InitButtons()
 bool InitSteppers()
 {
   Serial.println("Initializing Steppers...");
-  m_stepper1 = new AccelStepper(AccelStepper::DRIVER, GPIO_NUM_2, GPIO_NUM_15);
+  m_stepper1 = new TMC2208_AccelStepper(AccelStepper::DRIVER, GPIO_NUM_2, GPIO_NUM_15,GPIO_NUM_0,GPIO_NUM_4,GPIO_NUM_16,.11f);
   m_stepper1->setPinsInverted(true, true, true);
-  m_stepper1->setEnablePin(GPIO_NUM_0);
-  m_stepper1->setAcceleration(1000);
-  m_stepper1->setMaxSpeed(10000);
-  m_stepper1->setSpeed(1000);
-  Serial.printf("Speed: %.3f\n", m_stepper1->speed());
+  m_stepper1->setSpeedMM(50);
+  m_stepper1->setAcclerationMMPSS(50);
+  m_stepper1->enableOutputs();
 
   return true;
 }
